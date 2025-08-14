@@ -47,11 +47,19 @@ export async function handleRequest(request) {
     console.log('targetUrl:'+targetUrl)
     console.log(headers)
 
-    const response = await fetch(targetUrl, {
+    // 构造 fetch 请求的选项
+    const fetchOptions = {
       method: request.method,
       headers: headers,
-      body: request.body
-    });
+    };
+
+    // 如果请求有请求体，则添加 body 和 duplex 选项
+    // duplex: 'half' 是在某些现代 JS 运行时（如 Netlify Edge）中处理流式请求体所必需的
+    if (request.body) {
+      fetchOptions.body = request.body;
+      fetchOptions.duplex = 'half';
+    }
+    const response = await fetch(targetUrl, fetchOptions);
 
     console.log("Call Gemini Success")
 
